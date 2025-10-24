@@ -1,1 +1,94 @@
+--/**THIS IS THE DDL SECTION FOR THE BROMZE LAYER /**
+\** EXECUTION COMMAND : exec bronze.load_bronze
+
+
+CREATE OR ALTER PROCEDURE bronze.load_bronze  as
+begin 
+declare @start_date datetime,@end_date datetime,@batch_start_time datetime ,@batch_end_time datetime
+set @batch_start_time=GETDATE();
+begin
+try 
+	truncate table bronze.crm_cst_info
+	
+	set @start_date = GETDATE();
+	bulk insert bronze.crm_cst_info
+	from 'E:\DOWNLOADS E\sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_crm\cust_info.csv'
+	with (
+	firstrow= 2,
+	fieldterminator = ',',
+	tablock
+	)
+	set @end_date= GETDATE();
+     print  'load duration :  '+  cast( datediff(second,@start_date,@end_date)as nvarchar) + 'seconds'
+	;
+	--select * from bronze.crm_cst_info
+
+	truncate table bronze.crm_prd_info
+	set @start_date = GETDATE();
+	bulk insert bronze.crm_prd_info 
+	from 'E:\DOWNLOADS E\sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_crm\prd_info.csv'
+	with (
+	firstrow = 2,
+	fieldterminator =',',
+	tablock
+	)
+	set @end_date =GETDATE();
+	print 'loadout time : ' + cast(datediff(second,@start_date,@end_date)as nvarchar)+ '  seconds'
+	;
+
+	truncate table bronze.crm_sls_details
+	
+	set @start_date = GETDATE();
+	bulk insert bronze.crm_sls_details
+	from 'E:\DOWNLOADS E\sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_crm\sales_details.csv'
+	with (
+	firstrow = 2,
+	fieldterminator = ',',
+	tablock
+	)
+	set @end_date=GETDATE();
+	print 'loadout time : ' + cast(datediff(second,@start_date,@end_date)as nvarchar)+ '  seconds'
+	; 
+
+	truncate  table bronze.erp_cust_az12 
+	set @start_date = GETDATE();
+	bulk insert bronze.erp_cust_az12
+	from 'E:\DOWNLOADS E\sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_erp\CUST_AZ12.csv'
+	with (
+	firstrow = 2,
+	fieldterminator =',',
+	tablock
+	)
+	set @end_date=GETDATE();
+	print 'loadout time : ' + cast(datediff(second,@start_date,@end_date)as nvarchar)+ '  seconds'
+
+	 truncate table bronze.erp_loc_a101
+	set @start_date = GETDATE();
+	bulk insert bronze.erp_loc_a101
+	from 'E:\DOWNLOADS E\sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_erp\LOC_A101.csv'
+	with (
+	firstrow= 2,
+	fieldterminator =',',
+	tablock);
+	set @end_date = GETDATE();
+	print 'loadout time : ' + cast(datediff(second,@start_date,@end_date)as nvarchar)+ '  seconds'
+
+	truncate table bronze.erp_px_cat_g1v2
+	set @start_date = GETDATE();
+	bulk insert bronze.erp_px_cat_g1v2
+	from 'E:\DOWNLOADS E\sql-data-warehouse-project\sql-data-warehouse-project\datasets\source_erp\PX_CAT_G1V2.csv'
+	with (
+	firstrow=2,
+	fieldterminator =',',
+	tablock
+	) 
+	set @end_date=GETDATE();
+	print 'loadout time : ' + cast(datediff(second,@start_date,@end_date)as nvarchar)+ '  seconds'
+	end try
+	begin catch
+	--here we can add built in functions like error message , error number, error state to display text that an eror has occured using print
+	end catch
+end
+set @batch_end_time=GETDATE(); 
+print 'Total loadout time : ' + cast(datediff(second,@start_date,@end_date)as nvarchar)+ '  seconds'
 
